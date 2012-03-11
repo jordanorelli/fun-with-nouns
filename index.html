@@ -24,7 +24,9 @@
       return Math.floor(Math.random() * 255);
     };
     var random_color = function() {
-      return "rgb("+ random_byte() + ", " + random_byte() + ", " + random_byte() + ")";
+      var c = "rgb("+ random_byte() + ", " + random_byte() + ", " + random_byte() + ")";
+      console.log(c);
+      return c;
     };
 
     var step = function(paper) {
@@ -44,14 +46,14 @@
             setTimeout(function(){step(paper);}, 20);
           }
           icon.attr({"opacity": 0.0, width: 100, height: 100, fill: random_color()});
-          icon.animate({"opacity": 1.0}, 20, function() {
-            icon.animate({"opacity": 0.0}, 20, function() {
+          icon.animate({"opacity": 1.0}, 1, function() {
+            icon.animate({"opacity": 0.0}, 1, function() {
               try {
                 icon.remove();
               } catch(e) {
                 console.log(e);
               }
-              setTimeout(function(){step(paper);}, 20);
+              setTimeout(function(){step(paper);}, 1);
             });
           });
         },
@@ -60,7 +62,7 @@
           console.log(textStatus);
           console.log(errorThrown);
           blacklist.push(i);
-          setTimeout(function(){step(paper);}, 20);
+          setTimeout(function(){step(paper);}, 1);
         }
       });
     };
