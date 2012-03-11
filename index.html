@@ -1,0 +1,64 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="lt-ie9 lt-ie8 lt-ie7" lang="en"><![endif]-->
+<!--[if IE 7]><html class="lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if IE 8]><html class="lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--><html lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title></title>
+  <meta name="viewport" content="width=device-width">
+</head>
+<body>
+  <div id="icon"></div>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.1.min.js"><\/script>')</script>
+  <script src="//github.com/DmitryBaranovskiy/raphael/raw/master/raphael-min.js"></script>
+  <script>window.Raphael || document.write('<script src="js/libs/raphael-min.js"></\script>')</script>
+  <script src="js/libs/raphael-svg-import.js"></script>
+  <script>
+    var blacklist = [300, 334, 351, 360, 368, 512, 642, 645, 764, 779, 780, 798, 799, 800, 899, 962, 991, 997, 1037, 1048, 1075, 1077, 1102, 1104, 1268, 1271, 1272, 1273, 1274, 1321, 1358, 1359, 1389, 1391, 1404, 1406, 1442];
+
+    var step = function(paper) {
+      var i = 300;
+      while($.inArray(i, blacklist) > -1) {
+        i = Math.floor(Math.random() * 1535);
+      }
+      $.ajax({
+        url: "/noun/" + i,
+        success: function(data) {
+          var icon = paper.set();
+          try {
+            paper.importSVG(data, icon);
+          } catch(e) {
+            console.log(e);
+            setTimeout(function(){step(paper);}, 20);
+          }
+          icon.attr({"opacity": 0.0});
+          icon.animate({"opacity": 1.0}, 20, function() {
+            icon.animate({"opacity": 0.0}, 20, function() {
+              try {
+                icon.remove();
+              } catch(e) {
+                console.log(e);
+              }
+              setTimeout(function(){step(paper);}, 20);
+            });
+          });
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          console.log(XMLHttpRequest);
+          console.log(textStatus);
+          console.log(errorThrown);
+          setTimeout(function(){step(paper);}, 20);
+        }
+      });
+    };
+
+    $(document).ready(function() {
+      var paper = new Raphael("icon", 400, 400);
+      step(paper);
+    });
+  </script>
+</body>
+</html>
