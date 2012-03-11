@@ -18,6 +18,14 @@
   <script src="js/libs/raphael-svg-import.js"></script>
   <script>
     var blacklist = [300, 334, 351, 360, 368, 512, 642, 645, 764, 779, 780, 798, 799, 800, 899, 962, 991, 997, 1037, 1048, 1075, 1077, 1102, 1104, 1268, 1271, 1272, 1273, 1274, 1321, 1358, 1359, 1389, 1391, 1404, 1406, 1442];
+    var svg_cache = [];
+
+    var random_byte = function() {
+      return Math.floor(Math.random() * 255);
+    };
+    var random_color = function() {
+      return "rgb("+ random_byte() + ", " + random_byte() + ", " + random_byte() + ")";
+    };
 
     var step = function(paper) {
       var i = 300;
@@ -32,9 +40,10 @@
             paper.importSVG(data, icon);
           } catch(e) {
             console.log(e);
+            blacklist.push(i);
             setTimeout(function(){step(paper);}, 20);
           }
-          icon.attr({"opacity": 0.0});
+          icon.attr({"opacity": 0.0, width: 100, height: 100, fill: random_color()});
           icon.animate({"opacity": 1.0}, 20, function() {
             icon.animate({"opacity": 0.0}, 20, function() {
               try {
@@ -50,6 +59,7 @@
           console.log(XMLHttpRequest);
           console.log(textStatus);
           console.log(errorThrown);
+          blacklist.push(i);
           setTimeout(function(){step(paper);}, 20);
         }
       });
