@@ -34,37 +34,57 @@
       while($.inArray(i, blacklist) > -1) {
         i = Math.floor(Math.random() * 1535);
       }
-      $.ajax({
-        url: "/noun/" + i,
-        success: function(data) {
-          var icon = paper.set();
-          try {
-            paper.importSVG(data, icon);
-          } catch(e) {
-            console.log(e);
-            blacklist.push(i);
-            setTimeout(function(){step(paper);}, 20);
-          }
-          icon.attr({"opacity": 0.0, width: 100, height: 100, fill: random_color()});
-          icon.animate({"opacity": 1.0}, 1, function() {
-            icon.animate({"opacity": 0.0}, 1, function() {
-              try {
-                icon.remove();
-              } catch(e) {
-                console.log(e);
-              }
-              setTimeout(function(){step(paper);}, 1);
-            });
+
+      if(typeof svg_cache[i] !== 'undefined') {
+        console.log("reading svg from cache");
+        var svg = svg_cache[i];
+        var icon = paper.set();
+        paper.importSVG(svg, icon);
+        icon.attr({"opacity": 0.0, width: 100, height: 100, fill: random_color()});
+        icon.animate({"opacity": 1.0}, 20, function() {
+          icon.animate({"opacity": 0.0}, 20, function() {
+            try {
+              icon.remove();
+            } catch(e) {
+              console.log(e);
+            }
+            setTimeout(function(){step(paper);}, 1);
           });
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          console.log(XMLHttpRequest);
-          console.log(textStatus);
-          console.log(errorThrown);
-          blacklist.push(i);
-          setTimeout(function(){step(paper);}, 1);
-        }
-      });
+        });
+      } else {
+        $.ajax({
+          url: "/noun/" + i,
+          success: function(data) {
+            var icon = paper.set();
+            try {
+              paper.importSVG(data, icon);
+              svg_cache[i] = data;
+            } catch(e) {
+              console.log(e);
+              blacklist.push(i);
+              setTimeout(function(){step(paper);}, 20);
+            }
+            icon.attr({"opacity": 0.0, width: 100, height: 100, fill: random_color()});
+            icon.animate({"opacity": 1.0}, 20, function() {
+              icon.animate({"opacity": 0.0}, 20, function() {
+                try {
+                  icon.remove();
+                } catch(e) {
+                  console.log(e);
+                }
+                setTimeout(function(){step(paper);}, 1);
+              });
+            });
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown) {
+            console.log(XMLHttpRequest);
+            console.log(textStatus);
+            console.log(errorThrown);
+            blacklist.push(i);
+            setTimeout(function(){step(paper);}, 1);
+          }
+        });
+      }
     };
 
     $(document).ready(function() {
